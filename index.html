@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>闲置资产管理系统</title>
+    <style>
+        /* 重置默认样式 */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            position: relative;
+            color: black;
+            overflow: hidden;
+        }
+
+        /* 视频背景容器 */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+
+        /* 添加半透明遮罩层，提高文字可读性 */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: calc(100vh - 50px);
+            align-items: center;
+            text-align: center;
+            padding: 5px;
+            position: relative;
+            z-index: 1;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            margin-top: 10px;
+        }
+
+        .logo-title-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 5px;
+            padding: 0;
+            position: relative;
+        }
+
+        .logo {
+            height: 80px;
+            width: auto;
+            border-radius: 8px;
+            align-self: flex-start;
+            margin-left: 20px;
+            margin-top: 5px;
+            z-index: 1;
+        }
+
+        h1 {
+            width: 100%;
+            height: auto;
+            font-size: 58px;
+            text-align: center;
+            color: #3385FF;
+            text-shadow: 2px 2px 6px rgb(242, 247, 246);
+            margin: 20px 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 350px;
+            margin: 10px 0;
+            flex-shrink: 0;
+            margin-top: -80px !important;
+            /*强制应用上移 */
+        }
+
+        .nav-btn {
+            padding: 16px 22px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+            color: #2575fc;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60px; /* 设置固定高度 */
+        }
+
+        .nav-btn .permission-text {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+            color: #1a5fd8;
+        }
+
+        .nav-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 按钮悬停效果 */
+        .nav-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(37, 117, 252, 0.1);
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-btn:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* 需管理权限文本样式 */
+        .permission-text {
+            display: block;
+            font-size: 12px;
+            margin-top: 5px;
+            color: #888;
+        }
+
+        /* 添加响应式设计 */
+        @media (min-height: 800px) {
+            .nav-buttons {
+                gap: 20px;
+                margin: 15px 0;
+            }
+
+            .nav-btn {
+                padding: 18px 28px;
+                font-size: 20px;
+                height: 70px; /* 调整高分辨率下的高度 */
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .logo {
+                height: 50px;
+            }
+
+            .nav-btn {
+                padding: 14px 20px;
+                font-size: 17px;
+                height: 55px; /* 调整小屏幕下的高度 */
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 26px;
+            }
+
+            .logo-title-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .nav-buttons {
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 13px 18px;
+                font-size: 16px;
+                height: 50px; /* 调整更小屏幕下的高度 */
+            }
+        }
+
+        /* 添加动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header,
+        .nav-buttons {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .nav-buttons {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        /* 添加底部版权信息 */
+        footer {
+            width: 100%;
+            text-align: center;
+            font-size: 22px;
+            z-index: 1;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+            position: absolute;
+            bottom: 0;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 视频背景 -->
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source
+                src="https://hr-fly.chinaconch.com/hbp-filehub-web/download/bucket-hub/ce3be04a/4be22ca0af1240649f1ecb19f9f05990.mp4"
+                type="video/mp4">
+            您的浏览器不支持视频背景功能。
+        </video>
+    </div>
+
+    <!-- 半透明覆盖层 -->
+    <div class="video-overlay"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo-title-container">
+                <img class="logo" src="./images/logo.png" alt="系统Logo" />
+
+                <h1>海螺水泥闲置资产在线管理系统</h1>
+            </div>
+        </header>
+
+        <div class="nav-buttons">
+            <button class="nav-btn"
+                onclick="openLink('https://im.yungongplat.com/weboffice/office/d/357026995798016?share_id=G0Wx3tNtvQwVuH&')">闲置资产登记</button>
+            <button class="nav-btn"
+                onclick="openLink('https://im.yungongplat.com/weboffice/office/d/357026995798016?share_id=Q0g3SfnP6REqP3&')">闲置资产查询</button>
+            <button class="nav-btn"
+                onclick="openLink('https://im.yungongplat.com/weboffice/office/d/357026995798016?share_id=F0zHn13GukpQ8G&')">调剂申请</button>
+            <button class="nav-btn"
+                onclick="openLink('https://im.yungongplat.com/weboffice/office/d/357026995798016?share_id=G0p1EDFNENY6nX&')">闲置盘活登记</button>
+        
+        </div>
+
+        <div>首次登录需授权办公账号</div>
+    </div>
+    <footer>
+        &copy; <span id="current-year"></span> 安徽海螺财务服务有限公司 版权所有
+    </footer>
+
+    <script>
+        // 设置当前年份
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+
+    <script>
+        // 在新标签页中打开链接
+        function openLink(url) {
+            if (!url) {
+                console.error('URL is required');
+                return;
+            }
+
+            try {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (error) {
+                console.error('Failed to open link:', error);
+            }
+        }
+
+        // 添加页面加载完成后的额外效果
+        document.addEventListener('DOMContentLoaded', function () {
+            // 为按钮添加点击反馈效果
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach((button, index) => {
+                button.addEventListener('click', function (e) {
+                    // 添加点击涟漪效果
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(37, 117, 252, 0.3);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: ${size}px;
+                        height: ${size}px;
+                        top: ${y}px;
+                        left: ${x}px;
+                        z-index: 0;
+                    `;
+
+                    this.appendChild(ripple);
+
+                    // 移除涟漪元素
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+
+                // 添加键盘快捷键支持，数字1-3对应三个按钮
+                button.setAttribute('data-key', index + 1);
+            });
+
+            // 添加键盘快捷键支持
+            document.addEventListener('keydown', function (e) {
+                // 数字1-3对应三个按钮
+                if (e.key >= '1' && e.key <= '3') {
+                    const index = parseInt(e.key) - 1;
+                    const buttons = document.querySelectorAll('.nav-btn');
+                    if (buttons[index]) {
+                        buttons[index].click();
+                    }
+                }
+            });
+        });
+
+        // 添加涟漪动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>
