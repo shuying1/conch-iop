@@ -2,9 +2,11 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>闲置资产管理系统</title>
     <style>
         /* 重置默认样式 */
@@ -113,12 +115,13 @@
         .nav-buttons {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
             width: 100%;
             max-width: 400px;
-            margin: 10px 0;
+            margin: 5px auto;
             flex-shrink: 0;
-            margin-top: -80px;
+            align-items: center;
+            justify-content: space-around;
         }
 
         .nav-btn {
@@ -141,7 +144,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 60px;
+            height: 80px;
+            margin-top: 5px;
         }
 
         /* 子菜单容器 - 包括新增闲置按钮和下方悬停展开 */
@@ -504,34 +508,6 @@
                 font-size: 17px;
                 height: 55px;
             }
-
-            .submenu {
-                min-width: 100%;
-            }
-
-            .submenu-item {
-                padding: 12px 18px;
-                font-size: 15px;
-            }
-
-            .regions-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 10px;
-            }
-
-            .region-card {
-                height: 70px;
-                padding: 8px 5px;
-            }
-
-            .region-name {
-                font-size: 14px;
-            }
-
-            .filter-btn {
-                padding: 6px 12px;
-                font-size: 14px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -552,30 +528,6 @@
                 padding: 13px 18px;
                 font-size: 16px;
                 height: 50px;
-            }
-
-            .submenu-item {
-                padding: 11px 16px;
-                font-size: 14px;
-            }
-            
-            .regions-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 8px;
-            }
-
-            .region-card {
-                height: 65px;
-                padding: 6px 4px;
-            }
-
-            .region-name {
-                font-size: 13px;
-            }
-
-            .filter-btn {
-                padding: 4px 8px;
-                font-size: 12px;
             }
         }
 
@@ -678,7 +630,7 @@
         <header>
             <div class="logo-title-container">
                 <!-- <img class="logo" src="./images/logo.png" alt="系统Logo" /> -->
-                
+              
                 <img class="logo"
                     src="https://cdn.nlark.com/yuque/0/2026/png/12676018/1767599316566-15aefeeb-f8ef-4007-9f22-deb05ac7fea3.png"
                     alt="系统Logo" /> 
